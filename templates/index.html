@@ -1,357 +1,544 @@
-5px;
-            margin-bottom: 10px;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA HUNCH - Medical Diagnosis System</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .nasa-header {
+            background: linear-gradient(90deg, #0b3d91 0%, #1c6fd6 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 5px solid #e83f4e;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .symptom-category {
+            background: white;
+            border-radius: 10px;
             padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #0b3d91;
         }
-        .severity-slider {
-            width: 100%;
-        }
-        .badge-severity {
-            font-size: 0.8em;
-            margin-left: 5px;
-        }
-
-        .symptom-item {
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent !important;
-            position: relative;
-            min-height: 120px;
+        
+        .symptom-option {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            padding: 12px 15px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
         }
-
-        .symptom-item:hover {
-            background-color: #e7f3ff !important;
-            border-color: #0d6efd !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        
+        .symptom-option:hover {
+            background: #e3f2fd;
+            border-color: #0d6efd;
         }
-
-        .symptom-item.selected {
-            background-color: #0d6efd !important;
-            color: white !important;
-            border-color: #0a58ca !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+        
+        .symptom-option.selected {
+            background: #0d6efd;
+            color: white;
+            border-color: #0a58ca;
         }
-
-        .symptom-item.selected .text-muted {
-            color: rgba(255, 255, 255, 0.8) !important;
+        
+        .symptom-option.selected .symptom-icon {
+            color: white;
         }
-
-        .symptom-item.selected:hover {
-            background-color: #0a58ca !important;
+        
+        .symptom-icon {
+            font-size: 1.2rem;
+            margin-right: 12px;
+            color: #0b3d91;
         }
-
-        .symptom-item i {
-            transition: all 0.3s ease;
+        
+        .flow-step {
+            display: none;
         }
-
-        /* Pulse animation for selected symptoms */
+        
+        .flow-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .severity-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .treatment-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .emergency-alert {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+        
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% { box-shadow: 0 0 0 0 rgba(238, 90, 82, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(238, 90, 82, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(238, 90, 82, 0); }
         }
-
-        .symptom-item.selected {
-            animation: pulse 0.5s ease;
+        
+        .nav-btn {
+            padding: 10px 30px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
         }
-
-        /* Selected count badge */
-        .selection-count {
+        
+        .selected-count {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
             z-index: 1000;
-        }
-
-        /* Selection summary */
-        #selectionSummary {
-            transition: all 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <!-- Header -->
-                <div class="text-center mb-5">
-                    <h1 class="display-4 text-primary">🏥 Medical Diagnosis Assistant</h1>
-                    <p class="lead">Select symptoms and provide details for accurate diagnosis</p>
-                    <div class="alert alert-info" role="alert">
-                        <i class="bi bi-info-circle"></i> Please provide symptom details for more accurate diagnosis
-                    </div>
+    <!-- NASA Header -->
+    <div class="nasa-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-1">
+                    <div style="font-size: 3rem;">🚀</div>
                 </div>
-
-                <!-- Patient Info -->
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5><i class="bi bi-person"></i> Patient Information</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="patientName" class="form-label">Patient Name</label>
-                                <input type="text" class="form-control" id="patientName" placeholder="Enter your name">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="patientAge" class="form-label">Age</label>
-                                <input type="number" class="form-control" id="patientAge" placeholder="Enter your age" min="0" max="120">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Symptoms Selection -->
-                <div class="card mb-4 shadow-sm">
-                    <div class="card-header bg-success text-white">
-                        <h5><i class="bi bi-clipboard-pulse"></i> Symptom Selection</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>Click on symptoms to select them. Selected symptoms will appear below for detail entry.</p>
-                        
-                        <!-- Symptoms Grid -->
-                        <div class="mb-4">
-                            <h6>Available Symptoms:</h6>
-                            <div class="row" id="symptomsGrid">
-                                <!-- Symptoms will be loaded here -->
-                                <div class="col-6 col-md-4 mb-2">
-                                    <div class="text-center">Loading symptoms...</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Selected Symptoms with Details -->
-                        <div class="mt-4">
-                            <h6>Selected Symptoms with Details:</h6>
-                            <div id="selectedSymptomsDetails">
-                                <div class="alert alert-secondary">
-                                    No symptoms selected. Click symptoms above to add them.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="text-center mb-4">
-                    <button id="diagnoseBtn" class="btn btn-primary btn-lg px-5" disabled>
-                        <i class="bi bi-stethoscope"></i> Get Diagnosis
-                    </button>
-                    <button id="clearBtn" class="btn btn-outline-secondary btn-lg ms-2">
-                        <i class="bi bi-x-circle"></i> Clear All
-                    </button>
-                </div>
-
-                <!-- Results Section -->
-                <div id="resultsCard" class="card diagnosis-card shadow-lg">
-                    <div class="card-header bg-primary text-white">
-                        <h5><i class="bi bi-clipboard-data"></i> Diagnosis Results</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <h6>Diagnosis:</h6>
-                                <div class="display-4 text-primary" id="diagnosisResult">-</div>
-                                <div class="mt-3">
-                                    <div class="progress" style="height: 25px;">
-                                        <div id="confidenceBar" class="progress-bar progress-bar-striped progress-bar-animated" 
-                                             role="progressbar" style="width: 0%">
-                                            <span id="confidenceText" class="fw-bold">0%</span>
-                                        </div>
-                                    </div>
-                                    <small class="text-muted">Confidence Level</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6>Selected Symptoms Summary:</h6>
-                                <div id="symptomSummary" class="alert alert-light">
-                                    <!-- Symptom summary will appear here -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Treatment Plan -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6><i class="bi bi-capsule"></i> Treatment Recommendations:</h6>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <ul id="treatmentPlan" class="list-group list-group-flush">
-                                            <!-- Treatment items will be added here -->
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <h6><i class="bi bi-file-text"></i> Detailed Report:</h6>
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div id="detailedReport" class="small">
-                                            <!-- Report will appear here -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Loading Spinner -->
-                <div id="loadingSpinner" class="text-center my-4" style="display: none;">
-                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-3 fs-5">Analyzing symptoms and generating diagnosis...</p>
+                <div class="col-md-11">
+                    <h1 class="display-5 fw-bold">NASA HUNCH Medical System</h1>
+                    <p class="lead mb-0">AI-Powered Symptom Analysis & Diagnosis for Space and Earth</p>
+                    <small>Developed by NASA HUNCH Student Team</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Selection Counter -->
-    <div class="selection-count">
-        <span id="selectedCount" class="badge bg-primary rounded-pill p-3 fs-6">
-            <i class="bi bi-clipboard-check me-1"></i>
-            <span id="countNumber">0</span> selected
+    <div class="container">
+        <!-- Step 1: Initial Symptoms -->
+        <div class="flow-step active" id="step1">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Step 1: What's bothering you most?</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">Select your main symptom(s) to begin. You'll be able to add more details in the next steps.</p>
+                    
+                    <!-- Quick Selection -->
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="symptom-option" data-symptom="fever">
+                                <i class="bi bi-thermometer-sun symptom-icon"></i>
+                                <div>
+                                    <strong>Fever</strong>
+                                    <div class="text-muted small">Elevated body temperature</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="symptom-option" data-symptom="cough">
+                                <i class="bi bi-lungs symptom-icon"></i>
+                                <div>
+                                    <strong>Cough</strong>
+                                    <div class="text-muted small">Persistent coughing</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="symptom-option" data-symptom="headache">
+                                <i class="bi bi-emoji-dizzy symptom-icon"></i>
+                                <div>
+                                    <strong>Headache</strong>
+                                    <div class="text-muted small">Head pain or pressure</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="symptom-option" data-symptom="fatigue">
+                                <i class="bi bi-battery-half symptom-icon"></i>
+                                <div>
+                                    <strong>Fatigue</strong>
+                                    <div class="text-muted small">Extreme tiredness</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="symptom-option" data-symptom="nausea">
+                                <i class="bi bi-emoji-sick symptom-icon"></i>
+                                <div>
+                                    <strong>Nausea</strong>
+                                    <div class="text-muted small">Feeling sick to stomach</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="symptom-option" data-symptom="chest pain">
+                                <i class="bi bi-heart-pulse symptom-icon"></i>
+                                <div>
+                                    <strong>Chest Pain</strong>
+                                    <div class="text-muted small">Chest discomfort</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Or Search/Add -->
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6><i class="bi bi-search"></i> Can't find your symptom?</h6>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="symptomSearch" placeholder="Search for symptoms like 'sore throat', 'rash', 'dizziness'...">
+                                <button class="btn btn-outline-primary" id="addSymptomBtn">Add</button>
+                            </div>
+                            <div id="searchResults" class="mt-2"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <div></div>
+                        <button class="btn btn-primary nav-btn" onclick="nextStep(2)">
+                            Next <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Symptom Details -->
+        <div class="flow-step" id="step2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-clipboard-data"></i> Step 2: Tell us more about your symptoms</h4>
+                </div>
+                <div class="card-body">
+                    <div id="symptomDetailsContainer">
+                        <!-- Dynamic content for each selected symptom -->
+                        <p class="text-muted">No symptoms selected yet. Go back to Step 1.</p>
+                    </div>
+                    
+                    <!-- Suggested Symptoms based on current selection -->
+                    <div class="card bg-light mt-4" id="suggestedSymptomsCard" style="display: none;">
+                        <div class="card-body">
+                            <h6><i class="bi bi-lightbulb"></i> You might also be experiencing:</h6>
+                            <div id="suggestedSymptoms" class="d-flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary nav-btn" onclick="prevStep(1)">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-primary nav-btn" onclick="nextStep(3)">
+                            Next <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Patient Info & History -->
+        <div class="flow-step" id="step3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-person"></i> Step 3: Patient Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-control" id="patientAge" min="0" max="120" placeholder="Your age">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" id="patientGender">
+                                <option selected>Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other/Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Any known medical conditions?</label>
+                        <textarea class="form-control" id="medicalHistory" rows="3" placeholder="e.g., Diabetes, Asthma, High Blood Pressure..."></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Duration of symptoms</label>
+                        <select class="form-select" id="symptomDuration">
+                            <option selected>Select duration</option>
+                            <option value="hours">Less than 24 hours</option>
+                            <option value="days_1_3">1-3 days</option>
+                            <option value="days_4_7">4-7 days</option>
+                            <option value="weeks_1_2">1-2 weeks</option>
+                            <option value="weeks_2plus">More than 2 weeks</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary nav-btn" onclick="prevStep(2)">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-success nav-btn" onclick="getDiagnosis()">
+                            <i class="bi bi-stethoscope"></i> Get Diagnosis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="flow-step" id="step4">
+            <div class="result-card">
+                <!-- Loading -->
+                <div id="loadingSection" style="display: none;">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h4 class="mt-4">NASA AI Engine Analyzing Symptoms...</h4>
+                        <p class="text-muted">Comparing with 770+ diseases and 46,000+ medical cases</p>
+                    </div>
+                </div>
+                
+                <!-- Results -->
+                <div id="resultsSection" style="display: none;">
+                    <div class="text-center mb-4">
+                        <h2 class="text-primary">Diagnosis Results</h2>
+                        <p class="text-muted">Based on NASA HUNCH Medical AI Analysis</p>
+                    </div>
+                    
+                    <!-- Emergency Alert (if needed) -->
+                    <div id="emergencyAlert" class="emergency-alert" style="display: none;">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                            <div>
+                                <h5 class="mb-1">⚠️ EMERGENCY WARNING</h5>
+                                <p class="mb-0" id="emergencyMessage">Seek immediate medical attention!</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Primary Diagnosis -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Most Likely Condition</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h3 id="diagnosisName" class="text-primary mb-2">-</h3>
+                                    <p id="diagnosisDescription" class="text-muted">-</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h1 id="confidenceScore" class="display-4 text-success">-</h1>
+                                        <p class="mb-0">Confidence Score</p>
+                                        <div class="progress mt-2">
+                                            <div id="confidenceBar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Treatment Plan -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="bi bi-capsule"></i> Recommended Treatment Plan</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="treatmentPlan">
+                                <!-- Treatment items will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Information -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="bi bi-clipboard-check"></i> Symptoms Analyzed</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ul id="analyzedSymptoms" class="list-group list-group-flush">
+                                        <!-- Symptoms list -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Self-Care Tips</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="selfCareTips">
+                                        <!-- Tips will be inserted here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary me-2" onclick="restartFlow()">
+                            <i class="bi bi-arrow-clockwise"></i> Start New Assessment
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="printResults()">
+                            <i class="bi bi-printer"></i> Print Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selected Count Badge -->
+    <div class="selected-count">
+        <span class="badge bg-primary p-3 fs-6">
+            <i class="bi bi-clipboard-check"></i>
+            <span id="selectedCount">0</span> symptoms selected
         </span>
     </div>
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JavaScript -->
+
     <script>
         let selectedSymptoms = [];
         let symptomDetails = {};
         
-        // Load available symptoms
-        // Load available symptoms
-    fetch('/symptoms')
-        .then(response => response.json())
-        .then(data => {
-            const symptomsGrid = document.getElementById('symptomsGrid');
-            symptomsGrid.innerHTML = '';
-            
-            data.symptoms.forEach(symptom => {
-                const col = document.createElement('div');
-                col.className = 'col-6 col-md-3 mb-2';
-                
-                const symptomDiv = document.createElement('div');
-                symptomDiv.className = 'symptom-item p-3 border rounded text-center position-relative';
-                symptomDiv.innerHTML = `
-                    <i class="bi bi-plus-circle d-block fs-4 mb-2"></i>
-                    <span class="symptom-name">${symptom}</span>
-                    <div class="mt-1 small text-muted">Click to select</div>
-                `;
-                
-                // Check if already selected and highlight
-                if (selectedSymptoms.includes(symptom)) {
-                    symptomDiv.classList.add('selected');
-                    const icon = symptomDiv.querySelector('i');
-                    icon.className = 'bi bi-check-circle-fill d-block fs-4 mb-2 text-white';
-                    
-                    // Add badge
-                    const badge = document.createElement('span');
-                    badge.className = 'selected-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success';
-                    badge.style.fontSize = '0.6rem';
-                    badge.innerHTML = '<i class="bi bi-check"></i>';
-                    symptomDiv.appendChild(badge);
-                }
-                
-                symptomDiv.onclick = () => {
-                    if (selectedSymptoms.includes(symptom)) {
-                        removeSymptom(symptom);
-                    } else {
-                        addSymptom(symptom);
-                    }
-                };
-                
-                col.appendChild(symptomDiv);
-                symptomsGrid.appendChild(col);
+        // Initialize symptom options
+        document.querySelectorAll('.symptom-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const symptom = this.getAttribute('data-symptom');
+                toggleSymptom(symptom, this);
             });
         });
-
-        function addSymptom(symptom) {
-        if (!selectedSymptoms.includes(symptom)) {
-            selectedSymptoms.push(symptom);
-            // Add default details
-            symptomDetails[symptom] = {
-                duration: '',
-                severity: 5,
-                notes: ''
-            };
-            updateSymptomDetailsUI();
-            highlightSymptomButton(symptom, true);
-        }
-        }
-
-        function removeSymptom(symptom) {
-        const index = selectedSymptoms.indexOf(symptom);
-        if (index > -1) {
-            selectedSymptoms.splice(index, 1);
-            delete symptomDetails[symptom];
-            updateSymptomDetailsUI();
-            highlightSymptomButton(symptom, false);
-        }
-        }
-
-        function highlightSymptomButton(symptom, isSelected) {
-    // Find all symptom buttons
-    const symptomButtons = document.querySelectorAll('.symptom-item');
-    
-    symptomButtons.forEach(button => {
-        // Check if this button contains the symptom name
-        const symptomText = button.querySelector('span')?.textContent;
-        if (symptomText === symptom) {
-            if (isSelected) {
-                // Add selected class
-                button.classList.add('selected');
-                // Change icon to checkmark
-                const icon = button.querySelector('i');
-                if (icon) {
-                    icon.className = 'bi bi-check-circle-fill d-block fs-4 mb-2 text-white';
-                }
-                // Add a badge to show it's selected
-                let badge = button.querySelector('.selected-badge');
-                if (!badge) {
-                    badge = document.createElement('span');
-                    badge.className = 'selected-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success';
-                    badge.style.fontSize = '0.6rem';
-                    badge.innerHTML = '<i class="bi bi-check"></i>';
-                    button.style.position = 'relative';
-                    button.appendChild(badge);
-                }
-            } else {
-                // Remove selected class
-                button.classList.remove('selected');
-                // Change icon back to plus
-                const icon = button.querySelector('i');
-                if (icon) {
-                    icon.className = 'bi bi-plus-circle d-block fs-4 mb-2';
-                }
-                // Remove the badge
-                const badge = button.querySelector('.selected-badge');
-                if (badge) {
-                    badge.remove();
-                }
-            }
+        
+        // Search functionality
+        document.getElementById('addSymptomBtn').addEventListener('click', function() {
+            const searchInput = document.getElementById('symptomSearch');
+            const symptom = searchInput.value.trim().toLowerCase();
+            
+            if (symptom && !selectedSymptoms.includes(symptom)) {
+                addSymptom(symptom);
+                searchInput.value = '';
+                document.getElementById('searchResults').innerHTML = '';
             }
         });
+        
+        document.getElementById('symptomSearch').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            if (query.length > 2) {
+                searchSymptoms(query);
+            }
+        });
+        
+        function toggleSymptom(symptom, element) {
+            if (selectedSymptoms.includes(symptom)) {
+                removeSymptom(symptom);
+                element.classList.remove('selected');
+            } else {
+                addSymptom(symptom);
+                element.classList.add('selected');
+            }
+            updateSelectedCount();
         }
-
-        function updateSymptomDetailsUI() {
-            const container = document.getElementById('selectedSymptomsDetails');
+        
+        function addSymptom(symptom) {
+            if (!selectedSymptoms.includes(symptom)) {
+                selectedSymptoms.push(symptom);
+                symptomDetails[symptom] = {
+                    severity: 5,
+                    duration: '',
+                    notes: ''
+                };
+                updateUI();
+            }
+        }
+        
+        function removeSymptom(symptom) {
+            const index = selectedSymptoms.indexOf(symptom);
+            if (index > -1) {
+                selectedSymptoms.splice(index, 1);
+                delete symptomDetails[symptom];
+                updateUI();
+            }
+        }
+        
+        function updateSelectedCount() {
+            document.getElementById('selectedCount').textContent = selectedSymptoms.length;
+        }
+        
+        function updateUI() {
+            updateSelectedCount();
+            
+            // Update symptom details container if we're on step 2
+            if (document.getElementById('step2').classList.contains('active')) {
+                updateSymptomDetails();
+                updateSuggestedSymptoms();
+            }
+        }
+        
+        function updateSymptomDetails() {
+            const container = document.getElementById('symptomDetailsContainer');
             
             if (selectedSymptoms.length === 0) {
-                container.innerHTML = '<div class="alert alert-secondary">No symptoms selected. Click symptoms above to add them.</div>';
-                document.getElementById('diagnoseBtn').disabled = true;
+                container.innerHTML = '<p class="text-muted">No symptoms selected yet. Go back to Step 1.</p>';
                 return;
             }
             
@@ -359,276 +546,334 @@
             selectedSymptoms.forEach(symptom => {
                 const details = symptomDetails[symptom];
                 html += `
-                <div class="symptom-detail-card">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="mb-0">${symptom}</h6>
-                        <button class="btn btn-sm btn-outline-danger" onclick="removeSymptom('${symptom}')">
-                            <i class="bi bi-trash"></i>
+                <div class="symptom-category">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">${symptom.charAt(0).toUpperCase() + symptom.slice(1)}</h5>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeSymptom('${symptom}'); this.parentElement.parentElement.remove();">
+                            <i class="bi bi-trash"></i> Remove
                         </button>
                     </div>
                     
-                    <div class="row"><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Diagnosis System</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .diagnosis-card {
-            border-left: 5px solid #0d6efd;
-            display: none;
-        }
-        .symptom-item {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .symptom-item:hover {
-            background-color: #e9ecef;
-        }
-        .symptom-item.selected {
-            background-color: #0d6efd;
-            color: white;
-        }
-        .symptom-detail-card {
-            border: 1px solid #dee2e6;
-            border-radius: 
+                    <div class="row">
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Duration</label>
-                            <input type="text" 
-                                   class="form-control form-control-sm" 
-                                   placeholder="e.g., 3 days, 2 weeks"
-                                   value="${details.duration}"
-                                   onchange="updateSymptomDetail('${symptom}', 'duration', this.value)">
-                        </div>
-                        
-                        <div class="col-md-5 mb-3">
-                            <label class="form-label">Severity: <span id="severityValue-${symptom.replace(/\s+/g, '-')}">${details.severity}/10</span></label>
-                            <input type="range" 
-                                   class="form-range severity-slider" 
-                                   min="1" max="10" 
-                                   value="${details.severity}"
-                                   oninput="updateSeverityValue('${symptom}', this.value)">
-                        </div>
-                        
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">Severity Level</label>
-                            <div>
-                                ${getSeverityBadge(details.severity)}
+                            <label>Severity (1-10)</label>
+                            <input type="range" class="form-range" min="1" max="10" value="${details.severity}" 
+                                   onchange="updateSymptomDetail('${symptom}', 'severity', this.value)">
+                            <div class="d-flex justify-content-between small">
+                                <span>Mild</span>
+                                <span id="severityValue-${symptom.replace(/\s+/g, '-')}">${details.severity}/10</span>
+                                <span>Severe</span>
                             </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label>Duration</label>
+                            <select class="form-select" onchange="updateSymptomDetail('${symptom}', 'duration', this.value)">
+                                <option ${details.duration === '' ? 'selected' : ''}>Select duration</option>
+                                <option value="hours" ${details.duration === 'hours' ? 'selected' : ''}>Hours</option>
+                                <option value="days" ${details.duration === 'days' ? 'selected' : ''}>Days</option>
+                                <option value="weeks" ${details.duration === 'weeks' ? 'selected' : ''}>Weeks</option>
+                                <option value="months" ${details.duration === 'months' ? 'selected' : ''}>Months</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label>When did it start?</label>
+                            <input type="date" class="form-control" 
+                                   onchange="updateSymptomDetail('${symptom}', 'startDate', this.value)">
                         </div>
                     </div>
                     
-                    <div class="mb-2">
-                        <label class="form-label">Additional Notes (Optional)</label>
-                        <textarea class="form-control form-control-sm" 
-                                  rows="2"
+                    <div class="mb-3">
+                        <label>Additional details (optional)</label>
+                        <textarea class="form-control" rows="2" 
                                   placeholder="Describe the symptom in more detail..."
                                   onchange="updateSymptomDetail('${symptom}', 'notes', this.value)">${details.notes || ''}</textarea>
                     </div>
-                </div>`;
+                </div>
+                `;
             });
             
             container.innerHTML = html;
-            document.getElementById('diagnoseBtn').disabled = false;
         }
-
+        
         function updateSymptomDetail(symptom, field, value) {
             if (symptomDetails[symptom]) {
                 symptomDetails[symptom][field] = value;
-            }
-        }
-
-        function updateSeverityValue(symptom, value) {
-            const severityValue = document.getElementById(`severityValue-${symptom.replace(/\s+/g, '-')}`);
-            if (severityValue) {
-                severityValue.textContent = `${value}/10`;
-            }
-            updateSymptomDetail(symptom, 'severity', parseInt(value));
-            
-            // Update the badge in the UI
-            const badgeElement = document.querySelector(`#selectedSymptomsDetails .symptom-detail-card:has(input[value="${symptom}"]) .badge`);
-            if (badgeElement) {
-                badgeElement.className = getSeverityClass(value);
-                badgeElement.textContent = getSeverityText(value);
-            }
-        }
-
-        function getSeverityBadge(severity) {
-            const severityNum = parseInt(severity);
-            let className = 'badge ';
-            let text = '';
-            
-            if (severityNum <= 3) {
-                className += 'bg-success';
-                text = 'Mild';
-            } else if (severityNum <= 7) {
-                className += 'bg-warning text-dark';
-                text = 'Moderate';
-            } else {
-                className += 'bg-danger';
-                text = 'Severe';
-            }
-            
-            return `<span class="${className}">${text}</span>`;
-        }
-
-        function getSeverityClass(severity) {
-            const severityNum = parseInt(severity);
-            if (severityNum <= 3) return 'badge bg-success';
-            if (severityNum <= 7) return 'badge bg-warning text-dark';
-            return 'badge bg-danger';
-        }
-
-        function getSeverityText(severity) {
-            const severityNum = parseInt(severity);
-            if (severityNum <= 3) return 'Mild';
-            if (severityNum <= 7) return 'Moderate';
-            return 'Severe';
-        }
-
-        function updateSelectionCounter() {
-        const countNumber = document.getElementById('countNumber');
-        if (countNumber) {
-            countNumber.textContent = selectedSymptoms.length;
-            
-            // Update badge color based on count
-            const badge = document.querySelector('.selection-count .badge');
-            if (badge) {
-                if (selectedSymptoms.length === 0) {
-                    badge.className = 'badge bg-secondary rounded-pill p-3 fs-6';
-                } else if (selectedSymptoms.length < 3) {
-                    badge.className = 'badge bg-info rounded-pill p-3 fs-6';
-                } else if (selectedSymptoms.length < 6) {
-                    badge.className = 'badge bg-primary rounded-pill p-3 fs-6';
-                } else {
-                    badge.className = 'badge bg-success rounded-pill p-3 fs-6';
+                
+                // Update severity display
+                if (field === 'severity') {
+                    const displayElement = document.getElementById(`severityValue-${symptom.replace(/\s+/g, '-')}`);
+                    if (displayElement) {
+                        displayElement.textContent = `${value}/10`;
+                    }
                 }
             }
         }
-    }
-
-        // Clear selection
-        // Clear selection
-
-    document.getElementById('clearBtn').onclick = function() {
-        // Remove highlights from all symptom buttons
-        selectedSymptoms.forEach(symptom => {
-            highlightSymptomButton(symptom, false);
-        });
         
-        selectedSymptoms = [];
-        symptomDetails = {};
-        updateSymptomDetailsUI();
-        document.getElementById('resultsCard').style.display = 'none';
-        document.getElementById('patientName').value = '';
-        document.getElementById('patientAge').value = '';
-    };
-
-        // Get diagnosis
-        document.getElementById('diagnoseBtn').onclick = function() {
-            if (selectedSymptoms.length === 0) return;
+        function searchSymptoms(query) {
+            // In a real app, this would fetch from the server
+            const commonSymptoms = [
+                'sore throat', 'runny nose', 'sneezing', 'body aches',
+                'chills', 'muscle pain', 'loss of taste', 'loss of smell',
+                'mucus', 'wheezing', 'chest tightness', 'blurred vision',
+                'sensitivity to light', 'abdominal pain', 'back pain',
+                'joint pain', 'swelling', 'redness', 'dizziness', 'shortness of breath'
+            ];
+            
+            const results = commonSymptoms.filter(s => s.includes(query));
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (results.length > 0) {
+                let html = '<div class="d-flex flex-wrap gap-2">';
+                results.forEach(symptom => {
+                    html += `<span class="badge bg-light text-dark p-2" style="cursor: pointer;" 
+                             onclick="addSymptomFromSearch('${symptom}')">${symptom}</span>`;
+                });
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.innerHTML = '<p class="text-muted small">No matching symptoms found. Try being more specific.</p>';
+            }
+        }
+        
+        function addSymptomFromSearch(symptom) {
+            if (!selectedSymptoms.includes(symptom)) {
+                addSymptom(symptom);
+                document.getElementById('searchResults').innerHTML = '';
+                document.getElementById('symptomSearch').value = '';
+                
+                // If we're on step 2, refresh the details
+                if (document.getElementById('step2').classList.contains('active')) {
+                    updateSymptomDetails();
+                    updateSuggestedSymptoms();
+                }
+            }
+        }
+        
+        function updateSuggestedSymptoms() {
+            const suggestionsCard = document.getElementById('suggestedSymptomsCard');
+            const suggestionsDiv = document.getElementById('suggestedSymptoms');
+            
+            // This would come from the backend in a real app
+            // For now, show some common co-occurring symptoms
+            const suggestionMap = {
+                'fever': ['chills', 'sweating', 'body aches'],
+                'cough': ['sore throat', 'chest pain', 'shortness of breath'],
+                'headache': ['blurred vision', 'nausea', 'sensitivity to light'],
+                'fatigue': ['weakness', 'dizziness', 'difficulty concentrating'],
+                'nausea': ['vomiting', 'loss of appetite', 'abdominal pain'],
+                'chest pain': ['shortness of breath', 'dizziness', 'sweating']
+            };
+            
+            let allSuggestions = new Set();
+            selectedSymptoms.forEach(symptom => {
+                if (suggestionMap[symptom]) {
+                    suggestionMap[symptom].forEach(s => {
+                        if (!selectedSymptoms.includes(s)) {
+                            allSuggestions.add(s);
+                        }
+                    });
+                }
+            });
+            
+            if (allSuggestions.size > 0) {
+                suggestionsCard.style.display = 'block';
+                let html = '';
+                allSuggestions.forEach(symptom => {
+                    html += `<span class="badge bg-info text-dark p-2" style="cursor: pointer;" 
+                             onclick="addSymptom('${symptom}'); updateSymptomDetails(); this.remove();">${symptom}</span>`;
+                });
+                suggestionsDiv.innerHTML = html;
+            } else {
+                suggestionsCard.style.display = 'none';
+            }
+        }
+        
+        function nextStep(step) {
+            // Validate current step
+            if (step === 2 && selectedSymptoms.length === 0) {
+                alert('Please select at least one symptom to continue.');
+                return;
+            }
+            
+            // Hide all steps
+            document.querySelectorAll('.flow-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show target step
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            // Update UI if needed
+            if (step === 2) {
+                updateSymptomDetails();
+                updateSuggestedSymptoms();
+            }
+        }
+        
+        function prevStep(step) {
+            document.querySelectorAll('.flow-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById(`step${step}`).classList.add('active');
+        }
+        
+        async function getDiagnosis() {
+            // Validate
+            if (selectedSymptoms.length === 0) {
+                alert('Please select at least one symptom.');
+                return;
+            }
+            
+            const age = document.getElementById('patientAge').value;
+            if (!age || age < 0 || age > 120) {
+                alert('Please enter a valid age (0-120).');
+                return;
+            }
+            
+            // Move to results step
+            nextStep(4);
             
             // Show loading
-            document.getElementById('loadingSpinner').style.display = 'block';
-            document.getElementById('resultsCard').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
             
-            // Prepare symptom summary
-            const symptomSummary = selectedSymptoms.map(symptom => {
-                const details = symptomDetails[symptom];
-                return `${symptom} (${details.duration || 'unknown duration'}, Severity: ${details.severity}/10)`;
-            }).join(', ');
-            
-            document.getElementById('symptomSummary').textContent = symptomSummary;
-            
-            // Send request to backend
-            fetch('/diagnose', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+            try {
+                // Prepare data
+                const patientData = {
                     symptoms: selectedSymptoms,
                     symptom_details: symptomDetails,
-                    patientName: document.getElementById('patientName').value || 'Patient',
-                    patientAge: document.getElementById('patientAge').value || 'Not specified'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Hide loading
-                document.getElementById('loadingSpinner').style.display = 'none';
+                    age: age,
+                    gender: document.getElementById('patientGender').value,
+                    medical_history: document.getElementById('medicalHistory').value,
+                    duration: document.getElementById('symptomDuration').value
+                };
+                
+                // Send to backend
+                const response = await fetch('/diagnose', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(patientData)
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading, show results
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('resultsSection').style.display = 'block';
                 
                 if (data.success) {
                     // Update results
-                    document.getElementById('diagnosisResult').textContent = data.diagnosis || 'Unknown';
+                    document.getElementById('diagnosisName').textContent = data.diagnosis || 'Unable to determine';
+                    document.getElementById('confidenceScore').textContent = `${Math.round(data.confidence)}%`;
+                    document.getElementById('confidenceBar').style.width = `${data.confidence}%`;
                     
-                    const confidence = data.confidence || 0;
-                    const confidenceBar = document.getElementById('confidenceBar');
-                    confidenceBar.style.width = confidence + '%';
-                    confidenceBar.textContent = `${confidence}%`;
-                    
-                    // Color code confidence
-                    if (confidence >= 80) {
-                        confidenceBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-success';
-                    } else if (confidence >= 60) {
-                        confidenceBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
-                    } else {
-                        confidenceBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-danger';
+                    // Add description if available
+                    if (data.description) {
+                        document.getElementById('diagnosisDescription').textContent = data.description;
                     }
                     
                     // Update treatment plan
-                    const treatmentList = document.getElementById('treatmentPlan');
-                    treatmentList.innerHTML = '';
+                    const treatmentDiv = document.getElementById('treatmentPlan');
+                    treatmentDiv.innerHTML = '';
                     if (data.treatment && Array.isArray(data.treatment)) {
                         data.treatment.forEach(item => {
-                            const li = document.createElement('li');
-                            li.className = 'list-group-item d-flex align-items-center';
-                            li.innerHTML = `<i class="bi bi-check-circle text-success me-2"></i> ${item}`;
-                            treatmentList.appendChild(li);
+                            const div = document.createElement('div');
+                            div.className = 'treatment-item';
+                            div.innerHTML = `<i class="bi bi-check-circle-fill text-success me-2"></i> ${item}`;
+                            treatmentDiv.appendChild(div);
                         });
                     }
                     
-                    // Update report
-                    const reportDiv = document.getElementById('detailedReport');
-                    if (data.report) {
-                        reportDiv.innerHTML = data.report.replace(/\n/g, '<br>');
-                    } else {
-                        reportDiv.textContent = 'No detailed report available.';
+                    // Update symptoms list
+                    const symptomsList = document.getElementById('analyzedSymptoms');
+                    symptomsList.innerHTML = '';
+                    selectedSymptoms.forEach(symptom => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        li.innerHTML = `
+                            ${symptom}
+                            <span class="badge ${getSeverityClass(symptomDetails[symptom].severity)}">
+                                ${symptomDetails[symptom].severity}/10
+                            </span>
+                        `;
+                        symptomsList.appendChild(li);
+                    });
+                    
+                    // Add self-care tips
+                    const tipsDiv = document.getElementById('selfCareTips');
+                    tipsDiv.innerHTML = '';
+                    const tips = data.self_care || [
+                        'Get plenty of rest',
+                        'Stay hydrated',
+                        'Monitor symptoms daily',
+                        'Follow prescribed treatment'
+                    ];
+                    tips.forEach(tip => {
+                        const p = document.createElement('p');
+                        p.className = 'mb-2';
+                        p.innerHTML = `<i class="bi bi-check text-success me-2"></i> ${tip}`;
+                        tipsDiv.appendChild(p);
+                    });
+                    
+                    // Check for emergency
+                    if (data.emergency) {
+                        document.getElementById('emergencyAlert').style.display = 'block';
+                        document.getElementById('emergencyMessage').textContent = data.emergency_message || 
+                            'Based on your symptoms, you should seek immediate medical attention.';
                     }
                     
-                    // Show results with animation
-                    const resultsCard = document.getElementById('resultsCard');
-                    resultsCard.style.display = 'block';
-                    resultsCard.style.opacity = '0';
-                    resultsCard.style.transform = 'translateY(20px)';
-                    
-                    setTimeout(() => {
-                        resultsCard.style.transition = 'all 0.5s ease';
-                        resultsCard.style.opacity = '1';
-                        resultsCard.style.transform = 'translateY(0)';
-                    }, 100);
-                    
-                    // Scroll to results
-                    resultsCard.scrollIntoView({ behavior: 'smooth' });
                 } else {
-                    alert('Error: ' + (data.error || 'Unknown error'));
+                    throw new Error(data.error || 'Unknown error');
                 }
-            })
-            .catch(error => {
-                document.getElementById('loadingSpinner').style.display = 'none';
-                alert('Error connecting to server: ' + error.message);
+                
+            } catch (error) {
+                document.getElementById('loadingSection').style.display = 'none';
+                alert('Error getting diagnosis: ' + error.message);
+                prevStep(3);
+            }
+        }
+        
+        function getSeverityClass(severity) {
+            severity = parseInt(severity);
+            if (severity <= 3) return 'bg-success';
+            if (severity <= 7) return 'bg-warning text-dark';
+            return 'bg-danger';
+        }
+        
+        function restartFlow() {
+            // Reset everything
+            selectedSymptoms = [];
+            symptomDetails = {};
+            
+            // Reset UI
+            document.querySelectorAll('.symptom-option').forEach(opt => {
+                opt.classList.remove('selected');
             });
-        };
-
+            document.getElementById('patientAge').value = '';
+            document.getElementById('patientGender').selectedIndex = 0;
+            document.getElementById('medicalHistory').value = '';
+            document.getElementById('symptomDuration').selectedIndex = 0;
+            
+            // Go back to step 1
+            document.querySelectorAll('.flow-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById('step1').classList.add('active');
+            
+            updateSelectedCount();
+        }
+        
+        function printResults() {
+            window.print();
+        }
+        
         // Initialize
-        updateSymptomDetailsUI();
+        updateSelectedCount();
     </script>
 </body>
 </html>
+
